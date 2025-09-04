@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueshift Industry Monitor - Email & SMS</title>
+    <style>
+        :root {
+            --blueshift-blue: #1E3A8A;
+            --blueshift-light-blue: #3B82F6;
+            --blueshift-dark: #1E293B;
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #f59e0b;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+            --border-gray: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--blueshift-dark);
+            background-color: var(--light-gray);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--blueshift-blue) 0%, var(--blueshift-light-blue) 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 400;
+            margin: 10px 0;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* Mode Switcher */
+        .mode-switcher {
+            background: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 10px 30px;
+            border: 2px solid var(--border-gray);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--blueshift-light-blue);
+        }
+
+        .mode-btn.active {
+            background: var(--blueshift-blue);
+            color: white;
+            border-color: var(--blueshift-blue);
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .refresh-btn {
+            background: var(--blueshift-blue);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--blueshift-light-blue);
+        }
+
+        .refresh-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .last-updated {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--blueshift-dark);
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-gray);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--blueshift-light-blue);
+        }
+
+        .filter-btn.active {
+            background: var(--blueshift-blue);
+            color: white;
+            border-color: var(--blueshift-blue);
+        }
+
+        /* Articles */
+        .articles-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .priority-high { color: var(--error); }
+        .priority-medium { color: var(--warning); }
+
+        .article {
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .article:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--blueshift-light-blue);
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .article-title {
+            font-size: 18px;
+            color: var(--blueshift-dark);
+            text-decoration: none;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .article-title:hover {
+            color: var(--blueshift-light-blue);
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .article-source {
+            font-weight: 500;
+        }
+
+        .article-description {
+            color: var(--blueshift-dark);
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .new-badge {
+            background: var(--success);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Stats */
+        .stats {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--blueshift-blue);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Source Status Table */
+        .source-status {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--blueshift-dark);
+        }
+
+        .status-active {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .status-inactive {
+            color: var(--error);
+            font-weight: 500;
+        }
+
+        .status-checking {
+            color: var(--warning);
+            font-weight: 500;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .spinner {
+            border: 3px solid var(--light-gray);
+            border-top: 3px solid var(--blueshift-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .mode-switcher {
+                flex-direction: column;
+            }
+
+            .mode-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-group {
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .article-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">BLUESHIFT</div>
+            <h1>Industry Update Monitor</h1>
+            <p>Real-time monitoring of Email Deliverability and SMS Marketing updates</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Mode Switcher -->
+        <div class="mode-switcher">
+            <button class="mode-btn active" onclick="switchMode('email')">
+                📧 Email Updates
+            </button>
+            <button class="mode-btn" onclick="switchMode('sms')">
+                📱 SMS Updates
+            </button>
+        </div>
+
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshFeeds()">
+                🔄 Refresh All Feeds
+            </button>
+            <div class="last-updated">
+                Last updated: <span id="last-updated">Never</span>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-label">Filter by Priority:</div>
+            <div class="filter-group">
+                <button class="filter-btn active" onclick="filterPriority('all')">All Articles</button>
+                <button class="filter-btn" onclick="filterPriority('high')">High Priority</button>
+                <button class="filter-btn" onclick="filterPriority('medium')">Medium Priority</button>
+                <button class="filter-btn" onclick="filterPriority('low')">Low Priority</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2 class="section-header">📊 Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-articles">0</div>
+                    <div class="stat-label">Total Articles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="new-articles">0</div>
+                    <div class="stat-label">New Since Last Visit</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="high-priority">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="active-sources">0</div>
+                    <div class="stat-label">Active Sources</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p id="loading-text">Loading industry updates...</p>
+        </div>
+
+        <div id="articles-container"></div>
+
+        <div class="source-status">
+            <h2 class="section-header">📡 Source Monitoring Status</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Last Article</th>
+                            <th>Articles (7 days)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="source-status-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--gray);">
+                                No source data available. Click "Refresh All Feeds" to check sources.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current mode (email or sms)
+        let currentMode = 'email';
+        let currentFilter = 'all';
+        let allArticles = [];
+        let sourceStatusData = {};
+
+        // CORS Proxy configuration
+        const CORS_PROXIES = [
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
+            'https://cors-anywhere.herokuapp.com/'
+        ];
+
+        // Email RSS Feeds Configuration
+        const EMAIL_RSS_FEEDS = {
+            // Email Service Providers
+            'SendGrid Blog': {
+                url: 'https://sendgrid.com/blog/feed/',
+                category: 'ESP'
+            },
+            'Mailgun Blog': {
+                url: 'https://www.mailgun.com/blog/feed/',
+                category: 'ESP'
+            },
+            'SparkPost Blog': {
+                url: 'https://www.sparkpost.com/blog/feed/',
+                category: 'ESP'
+            },
+            'Postmark Blog': {
+                url: 'https://postmarkapp.com/blog/feed.xml',
+                category: 'ESP'
+            },
+            'Amazon SES Blog': {
+                url: 'https://aws.amazon.com/blogs/messaging-and-targeting/feed/',
+                category: 'ESP'
+            },
+            'Mailchimp Blog': {
+                url: 'https://mailchimp.com/feeds/blog/',
+                category: 'Email Marketing'
+            },
+            'Campaign Monitor Blog': {
+                url: 'https://www.campaignmonitor.com/blog/feed/',
+                category: 'Email Marketing'
+            },
+            'GetResponse Blog': {
+                url: 'https://www.getresponse.com/blog/feed',
+                category: 'Email Marketing'
+            },
+            'Constant Contact Blog': {
+                url: 'https://blogs.constantcontact.com/feed/',
+                category: 'Email Marketing'
+            },
+            'AWeber Blog': {
+                url: 'https://blog.aweber.com/feed',
+                category: 'Email Marketing'
+            },
+            
+            // Deliverability Services
+            'Validity Blog': {
+                url: 'https://www.validity.com/blog/feed/',
+                category: 'Deliverability'
+            },
+            '250ok Blog': {
+                url: 'https://250ok.com/blog/feed/',
+                category: 'Deliverability'
+            },
+            'Kickbox Blog': {
+                url: 'https://blog.kickbox.com/rss/',
+                category: 'Deliverability'
+            },
+            'Email on Acid Blog': {
+                url: 'https://www.emailonacid.com/blog/rss.xml',
+                category: 'Email Testing'
+            },
+            'GlockApps Blog': {
+                url: 'https://glockapps.com/blog/feed/',
+                category: 'Deliverability'
+            },
+            
+            // Industry Experts
+            'Word to the Wise': {
+                url: 'https://wordtothewise.com/feed/',
+                category: 'Industry Expert'
+            },
+            'Litmus Blog': {
+                url: 'https://litmus.com/blog/feed',
+                category: 'Email Design'
+            },
+            'Really Good Emails': {
+                url: 'https://reallygoodemails.com/blog/feed',
+                category: 'Email Design'
+            },
+            'Email Geeks': {
+                url: 'https://emailgeeks.com/feed/',
+                category: 'Community'
+            },
+            'Phrasee Blog': {
+                url: 'https://phrasee.co/feed/',
+                category: 'Email AI'
+            },
+            
+            // Major Email Providers
+            'Google Workspace Updates': {
+                url: 'https://workspaceupdates.googleblog.com/feeds/posts/default',
+                category: 'Email Provider'
+            },
+            'Microsoft 365 Blog': {
+                url: 'https://techcommunity.microsoft.com/gxcuf89792/rss/board?board.id=Exchange',
+                category: 'Email Provider'
+            }
+        };
+
+        // SMS RSS Feeds Configuration
+        const SMS_RSS_FEEDS = {
+            // SMS Platforms
+            'Twilio Blog': {
+                url: 'https://www.twilio.com/blog/feed',
+                category: 'SMS Platform'
+            },
+            'Sinch Blog': {
+                url: 'https://www.sinch.com/blog/feed/',
+                category: 'SMS Platform'
+            },
+            'Bandwidth Blog': {
+                url: 'https://www.bandwidth.com/blog/feed/',
+                category: 'SMS Platform'
+            },
+            'MessageBird Blog': {
+                url: 'https://messagebird.com/blog/feed',
+                category: 'SMS Platform'
+            },
+            'Plivo Blog': {
+                url: 'https://www.plivo.com/blog/feed/',
+                category: 'SMS Platform'
+            },
+            'Vonage Blog': {
+                url: 'https://www.vonage.com/resources/feed/',
+                category: 'SMS Platform'
+            },
+            
+            // SMS Marketing Tools
+            'SimpleTexting Blog': {
+                url: 'https://simpletexting.com/blog/feed/',
+                category: 'SMS Marketing'
+            },
+            'EZ Texting Blog': {
+                url: 'https://www.eztexting.com/blog/feed',
+                category: 'SMS Marketing'
+            },
+            'SlickText Blog': {
+                url: 'https://www.slicktext.com/blog/feed/',
+                category: 'SMS Marketing'
+            },
+            'Attentive Blog': {
+                url: 'https://www.attentivemobile.com/blog/rss.xml',
+                category: 'SMS Marketing'
+            },
+            'Klaviyo SMS': {
+                url: 'https://www.klaviyo.com/blog/topic/sms-marketing/feed',
+                category: 'SMS Marketing'
+            },
+            'TextMagic Blog': {
+                url: 'https://www.textmagic.com/blog/feed/',
+                category: 'SMS Marketing'
+            },
+            
+            // Mobile Marketing & Engagement
+            'Braze Blog': {
+                url: 'https://www.braze.com/resources/feed.xml',
+                category: 'Mobile Marketing'
+            },
+            'Airship Blog': {
+                url: 'https://www.airship.com/blog/feed/',
+                category: 'Mobile Marketing'
+            },
+            'OneSignal Blog': {
+                url: 'https://onesignal.com/blog/rss/',
+                category: 'Mobile Marketing'
+            },
+            'CleverTap Blog': {
+                url: 'https://clevertap.com/blog/feed/',
+                category: 'Mobile Marketing'
+            },
+            'MoEngage Blog': {
+                url: 'https://www.moengage.com/blog/feed/',
+                category: 'Mobile Marketing'
+            },
+            
+            // Compliance & Industry
+            'CTIA Blog': {
+                url: 'https://www.ctia.org/news/feed',
+                category: 'Compliance'
+            },
+            'Mobile Ecosystem Forum': {
+                url: 'https://mobileecosystemforum.com/feed/',
+                category: 'Industry'
+            },
+            'Tatango Blog': {
+                url: 'https://www.tatango.com/blog/feed/',
+                category: 'SMS Marketing'
+            },
+            'Mobile Marketing Watch': {
+                url: 'https://mobilemarketingwatch.com/feed/',
+                category: 'Industry News'
+            },
+            
+            // RCS & Innovation
+            'RCS Business Messaging': {
+                url: 'https://www.gsma.com/futurenetworks/rcs/feed/',
+                category: 'RCS'
+            },
+            'FierceWireless': {
+                url: 'https://www.fiercewireless.com/rss/xml',
+                category: 'Telecom News'
+            },
+            
+            // Additional Resources
+            'SMS Comparison': {
+                url: 'https://smscomparison.com/feed/',
+                category: 'Industry Analysis'
+            },
+            'Gartner Mobile': {
+                url: 'https://www.gartner.com/en/mobile/feed',
+                category: 'Industry Analysis'
+            }
+        };
+
+        // Email-specific keywords
+        const EMAIL_KEYWORDS = [
+            // Technical
+            'deliverability', 'inbox placement', 'spam', 'spf', 'dkim', 'dmarc', 
+            'authentication', 'ip reputation', 'domain reputation', 'bounce', 'blacklist',
+            'whitelist', 'sender score', 'feedback loop', 'ip warming',
+            
+            // Email Components
+            'subject line', 'preheader', 'email design', 'email template', 'html email',
+            'amp email', 'dark mode email', 'email accessibility',
+            
+            // Marketing
+            'email marketing', 'email campaign', 'email automation', 'drip campaign',
+            'segmentation', 'personalization', 'a/b testing', 'email metrics',
+            'open rate', 'click rate', 'conversion rate', 'unsubscribe',
+            
+            // Compliance
+            'can-spam', 'gdpr', 'ccpa', 'casl', 'privacy', 'consent', 'opt-in', 'opt-out',
+            
+            // Providers
+            'gmail', 'outlook', 'yahoo mail', 'apple mail', 'aol mail'
+        ];
+
+        // SMS-specific keywords
+        const SMS_KEYWORDS = [
+            // Technical
+            'sms', 'text message', 'text messaging', 'mms', 'short code', 'shortcode', 
+            'long code', '10dlc', 'a2p', 'p2p', 'smpp', 'ss7', 'carrier', 'throughput',
+            
+            // Compliance
+            'tcpa', 'ctia', 'opt-in', 'opt-out', 'stop', 'consent', 'compliance',
+            'shaft', 'carrier filtering', 'spam', 'a2p 10dlc', 'campaign registry',
+            
+            // Features
+            'two-way', 'conversational', 'sms api', 'bulk sms', 'sms gateway',
+            'message segments', 'unicode', 'concatenation', 'delivery receipt',
+            
+            // Marketing
+            'sms marketing', 'sms campaign', 'text campaign', 'mobile marketing',
+            'sms automation', 'drip campaign', 'sms roi', 'click-through', 'conversion',
+            
+            // Emerging
+            'rcs', 'rich communication', 'rich messaging', 'business messaging',
+            'conversational commerce', 'mobile wallet', 'mobile payment'
+        ];
+
+        // Priority keywords
+        const EMAIL_HIGH_PRIORITY = [
+            'major update', 'breaking change', 'security', 'vulnerability', 'deliverability crisis',
+            'blacklist', 'spam trap', 'authentication failure', 'google update', 'microsoft update',
+            'yahoo update', 'urgent', 'critical', 'immediate action'
+        ];
+
+        const EMAIL_MEDIUM_PRIORITY = [
+            'new feature', 'update', 'best practice', 'improvement', 'beta', 'announcement',
+            'policy change', 'guideline', 'recommendation'
+        ];
+
+        const SMS_HIGH_PRIORITY = [
+            'tcpa violation', 'compliance violation', 'carrier block', 'filtering',
+            '10dlc deadline', 'registration required', 'service disruption', 'outage',
+            'security breach', 'spam detection', 'deliverability issue', 'major update'
+        ];
+
+        const SMS_MEDIUM_PRIORITY = [
+            'new feature', 'product update', 'integration', 'partnership', 
+            'best practice', 'case study', 'industry report', 'benchmark'
+        ];
+
+        // Storage keys
+        const EMAIL_STORAGE_KEY = 'deliverabilityData';
+        const EMAIL_LAST_VISIT_KEY = 'deliverabilityLastVisit';
+        const EMAIL_SOURCE_STATUS_KEY = 'emailSourceStatus';
+        const EMAIL_LAST_UPDATE_KEY = 'emailLastUpdate';
+
+        const SMS_STORAGE_KEY = 'smsIndustryData';
+        const SMS_LAST_VISIT_KEY = 'smsLastVisit';
+        const SMS_SOURCE_STATUS_KEY = 'smsSourceStatus';
+        const SMS_LAST_UPDATE_KEY = 'smsLastUpdate';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStoredData();
+            updateUI();
+            
+            // Auto-refresh if data is old
+            const storageKey = currentMode === 'email' ? EMAIL_LAST_UPDATE_KEY : SMS_LAST_UPDATE_KEY;
+            const lastUpdate = localStorage.getItem(storageKey);
+            if (!lastUpdate || Date.now() - parseInt(lastUpdate) > 3600000) { // 1 hour
+                refreshFeeds();
+            }
+        });
+
+        // Switch between Email and SMS mode
+        function switchMode(mode) {
+            currentMode = mode;
+            currentFilter = 'all';
+            
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Reset filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes('All')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Update header subtitle
+            const subtitle = mode === 'email' ? 
+                'Real-time monitoring of email deliverability and authentication updates' :
+                'Real-time monitoring of SMS, text messaging, and mobile marketing updates';
+            document.querySelector('.header p').textContent = subtitle;
+            
+            // Update loading text
+            document.getElementById('loading-text').textContent = 
+                mode === 'email' ? 'Loading email deliverability updates...' : 'Loading SMS industry updates...';
+            
+            loadStoredData();
+            updateUI();
+        }
+
+        // Load stored data based on current mode
+        function loadStoredData() {
+            const storageKey = currentMode === 'email' ? EMAIL_STORAGE_KEY : SMS_STORAGE_KEY;
+            const lastVisitKey = currentMode === 'email' ? EMAIL_LAST_VISIT_KEY : SMS_LAST_VISIT_KEY;
+            const sourceStatusKey = currentMode === 'email' ? EMAIL_SOURCE_STATUS_KEY : SMS_SOURCE_STATUS_KEY;
+            
+            // Load articles
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                try {
+                    allArticles = JSON.parse(stored);
+                } catch (e) {
+                    console.error('Error loading stored data:', e);
+                    allArticles = [];
+                }
+            } else {
+                allArticles = [];
+            }
+            
+            // Load source status
+            const statusStored = localStorage.getItem(sourceStatusKey);
+            if (statusStored) {
+                try {
+                    sourceStatusData = JSON.parse(statusStored);
+                } catch (e) {
+                    console.error('Error loading source status:', e);
+                    sourceStatusData = {};
+                }
+            } else {
+                sourceStatusData = {};
+            }
+            
+            // Update last visit
+            localStorage.setItem(lastVisitKey, Date.now());
+        }
+
+        // Update UI
+        function updateUI() {
+            displayArticles();
+            updateStats();
+            updateLastUpdated();
+            displaySourceStatus();
+        }
+
+        // Try fetching with different CORS proxies
+        async function fetchWithCORS(url) {
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const response = await fetch(proxy + encodeURIComponent(url), {
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        }
+                    });
+                    if (response.ok) {
+                        return await response.text();
+                    }
+                } catch (error) {
+                    console.log(`Failed with proxy ${proxy}:`, error.message);
+                }
+            }
+            throw new Error('All CORS proxies failed');
+        }
+
+        // Refresh all feeds
+        async function refreshFeeds() {
+            const button = document.querySelector('.refresh-btn');
+            const loading = document.getElementById('loading');
+            
+            button.disabled = true;
+            loading.style.display = 'block';
+            
+            const rssFeeds = currentMode === 'email' ? EMAIL_RSS_FEEDS : SMS_RSS_FEEDS;
+            const keywords = currentMode === 'email' ? EMAIL_KEYWORDS : SMS_KEYWORDS;
+            const storageKey = currentMode === 'email' ? EMAIL_STORAGE_KEY : SMS_STORAGE_KEY;
+            const sourceStatusKey = currentMode === 'email' ? EMAIL_SOURCE_STATUS_KEY : SMS_SOURCE_STATUS_KEY;
+            const lastUpdateKey = currentMode === 'email' ? EMAIL_LAST_UPDATE_KEY : SMS_LAST_UPDATE_KEY;
+            const lastVisitKey = currentMode === 'email' ? EMAIL_LAST_VISIT_KEY : SMS_LAST_VISIT_KEY;
+            
+            const newArticles = [];
+            const tempSourceStatus = {};
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            
+            // Initialize source status
+            for (const [source, config] of Object.entries(rssFeeds)) {
+                tempSourceStatus[source] = {
+                    category: config.category,
+                    status: 'checking',
+                    lastArticle: 'Checking...',
+                    articleCount: 0,
+                    lastChecked: new Date().toISOString()
+                };
+            }
+            
+            // Display initial checking status
+            sourceStatusData = tempSourceStatus;
+            displaySourceStatus();
+            
+            // Fetch from all sources
+            const fetchPromises = Object.entries(rssFeeds).map(async ([source, config]) => {
+                try {
+                    console.log(`Fetching from ${source}...`);
+                    const xmlText = await fetchWithCORS(config.url);
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(xmlText, 'text/xml');
+                    
+                    const items = xml.querySelectorAll('item, entry');
+                    let sourceArticleCount = 0;
+                    let latestDate = null;
+                    
+                    items.forEach(item => {
+                        const titleEl = item.querySelector('title');
+                        const linkEl = item.querySelector('link');
+                        const descEl = item.querySelector('description, summary, content');
+                        const dateEl = item.querySelector('pubDate, published, updated');
+                        
+                        if (titleEl && linkEl) {
+                            const title = titleEl.textContent;
+                            const link = linkEl.textContent || linkEl.getAttribute('href');
+                            const description = descEl ? descEl.textContent : '';
+                            const dateStr = dateEl ? dateEl.textContent : new Date().toISOString();
+                            const pubDate = new Date(dateStr);
+                            
+                            // Count articles from last 7 days for source status
+                            if (pubDate.getTime() > sevenDaysAgo) {
+                                sourceArticleCount++;
+                            }
+                            
+                            // Track latest article date
+                            if (!latestDate || pubDate > latestDate) {
+                                latestDate = pubDate;
+                            }
+                            
+                            // Check if relevant
+                            const fullText = `${title} ${description}`.toLowerCase();
+                            const isRelevant = keywords.some(keyword => 
+                                fullText.includes(keyword.toLowerCase())
+                            );
+                            
+                            if (isRelevant) {
+                                const article = {
+                                    title: cleanText(title),
+                                    link: link,
+                                    description: cleanText(description).substring(0, 300) + '...',
+                                    source: source,
+                                    category: config.category,
+                                    pubDate: pubDate.toISOString(),
+                                    timestamp: pubDate.getTime(),
+                                    id: `${source}-${link}`,
+                                    priority: determinePriority(fullText),
+                                    tags: extractTags(fullText)
+                                };
+                                
+                                newArticles.push(article);
+                            }
+                        }
+                    });
+                    
+                    // Update source status
+                    tempSourceStatus[source] = {
+                        category: config.category,
+                        status: sourceArticleCount > 0 ? 'active' : 'inactive',
+                        lastArticle: latestDate ? formatDate(latestDate) : 'No recent articles',
+                        articleCount: sourceArticleCount,
+                        lastChecked: new Date().toISOString()
+                    };
+                    
+                    console.log(`${source}: Found ${sourceArticleCount} articles in last 7 days`);
+                    
+                } catch (error) {
+                    console.error(`Error fetching ${source}:`, error);
+                    tempSourceStatus[source] = {
+                        category: config.category,
+                        status: 'error',
+                        lastArticle: 'Error fetching feed',
+                        articleCount: 0,
+                        lastChecked: new Date().toISOString(),
+                        error: error.message
+                    };
+                }
+            });
+            
+            await Promise.allSettled(fetchPromises);
+            
+            // Remove duplicates and sort
+            const uniqueArticles = removeDuplicates(newArticles);
+            allArticles = uniqueArticles.sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Save data
+            localStorage.setItem(storageKey, JSON.stringify(allArticles));
+            localStorage.setItem(lastUpdateKey, Date.now());
+            localStorage.setItem(sourceStatusKey, JSON.stringify(tempSourceStatus));
+            
+            // Update source status
+            sourceStatusData = tempSourceStatus;
+            displaySourceStatus();
+            
+            // Update UI
+            displayArticles();
+            updateStats();
+            updateLastUpdated();
+            
+            button.disabled = false;
+            loading.style.display = 'none';
+            
+            // Show summary
+            const newCount = allArticles.filter(a => 
+                a.timestamp > parseInt(localStorage.getItem(lastVisitKey))
+            ).length;
+            
+            const modeLabel = currentMode === 'email' ? 'Email' : 'SMS';
+            alert(`${modeLabel} refresh complete!\n\nTotal articles: ${allArticles.length}\nNew articles: ${newCount}\nActive sources: ${Object.values(tempSourceStatus).filter(s => s.status === 'active').length}`);
+        }
+
+        // Display source status table
+        function displaySourceStatus() {
+            const tbody = document.getElementById('source-status-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(sourceStatusData).length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--gray);">
+                            No source data available. Click "Refresh All Feeds" to check sources.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort sources by status (active first) then by name
+            const sortedSources = Object.entries(sourceStatusData).sort((a, b) => {
+                const statusOrder = { 'active': 0, 'inactive': 1, 'error': 2, 'checking': 3 };
+                const statusDiff = statusOrder[a[1].status] - statusOrder[b[1].status];
+                if (statusDiff !== 0) return statusDiff;
+                return a[0].localeCompare(b[0]);
+            });
+            
+            sortedSources.forEach(([source, data]) => {
+                const row = document.createElement('tr');
+                
+                const statusClass = 
+                    data.status === 'active' ? 'status-active' :
+                    data.status === 'inactive' ? 'status-inactive' :
+                    data.status === 'error' ? 'status-inactive' :
+                    'status-checking';
+                
+                const statusText = 
+                    data.status === 'active' ? '✅ Active' :
+                    data.status === 'inactive' ? '⚠️ Inactive' :
+                    data.status === 'error' ? '❌ Error' :
+                    '🔄 Checking';
+                
+                row.innerHTML = `
+                    <td>${source}</td>
+                    <td>${data.category}</td>
+                    <td class="${statusClass}">${statusText}</td>
+                    <td>${data.lastArticle}</td>
+                    <td>${data.articleCount}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Clean text
+        function cleanText(text) {
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            return div.textContent || div.innerText || '';
+        }
+
+        // Determine priority
+        function determinePriority(text) {
+            const lowerText = text.toLowerCase();
+            const highPriorityKeywords = currentMode === 'email' ? EMAIL_HIGH_PRIORITY : SMS_HIGH_PRIORITY;
+            const mediumPriorityKeywords = currentMode === 'email' ? EMAIL_MEDIUM_PRIORITY : SMS_MEDIUM_PRIORITY;
+            
+            if (highPriorityKeywords.some(keyword => lowerText.includes(keyword))) {
+                return 'high';
+            }
+            
+            if (mediumPriorityKeywords.some(keyword => lowerText.includes(keyword))) {
+                return 'medium';
+            }
+            
+            return 'low';
+        }
+
+        // Extract tags
+        function extractTags(text) {
+            const tags = [];
+            const lowerText = text.toLowerCase();
+            
+            if (currentMode === 'email') {
+                // Email-specific tags
+                if (lowerText.includes('spf') || lowerText.includes('dkim') || lowerText.includes('dmarc')) tags.push('Authentication');
+                if (lowerText.includes('deliverability')) tags.push('Deliverability');
+                if (lowerText.includes('gdpr') || lowerText.includes('can-spam')) tags.push('Compliance');
+                if (lowerText.includes('gmail') || lowerText.includes('outlook')) tags.push('Provider Update');
+                if (lowerText.includes('segmentation') || lowerText.includes('personalization')) tags.push('Marketing');
+                if (lowerText.includes('api')) tags.push('API');
+                if (lowerText.includes('design') || lowerText.includes('template')) tags.push('Design');
+            } else {
+                // SMS-specific tags
+                if (lowerText.includes('10dlc') || lowerText.includes('a2p')) tags.push('10DLC/A2P');
+                if (lowerText.includes('tcpa') || lowerText.includes('compliance')) tags.push('Compliance');
+                if (lowerText.includes('rcs')) tags.push('RCS');
+                if (lowerText.includes('api')) tags.push('API');
+                if (lowerText.includes('deliverability')) tags.push('Deliverability');
+                if (lowerText.includes('marketing')) tags.push('Marketing');
+                if (lowerText.includes('security')) tags.push('Security');
+                if (lowerText.includes('carrier')) tags.push('Carrier');
+            }
+            
+            return tags;
+        }
+
+        // Remove duplicates
+        function removeDuplicates(articles) {
+            const seen = new Set();
+            return articles.filter(article => {
+                const key = article.link;
+                if (seen.has(key)) {
+                    return false;
+                }
+                seen.add(key);
+                return true;
+            });
+        }
+
+        // Display articles
+        function displayArticles() {
+            const container = document.getElementById('articles-container');
+            container.innerHTML = '';
+            
+            const lastVisitKey = currentMode === 'email' ? EMAIL_LAST_VISIT_KEY : SMS_LAST_VISIT_KEY;
+            const lastVisit = parseInt(localStorage.getItem(lastVisitKey));
+            
+            // Filter articles
+            let filtered = allArticles;
+            if (currentFilter !== 'all') {
+                filtered = allArticles.filter(a => a.priority === currentFilter);
+            }
+            
+            if (filtered.length === 0) {
+                const modeText = currentMode === 'email' ? 'email deliverability' : 'SMS industry';
+                container.innerHTML = `
+                    <div class="no-articles">
+                        <p>No articles found. Click "Refresh All Feeds" to load the latest ${modeText} updates.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group by priority
+            const grouped = {
+                high: filtered.filter(a => a.priority === 'high'),
+                medium: filtered.filter(a => a.priority === 'medium'),
+                low: filtered.filter(a => a.priority === 'low')
+            };
+            
+            // Display each priority group
+            ['high', 'medium', 'low'].forEach(priority => {
+                if (grouped[priority].length > 0) {
+                    const section = document.createElement('div');
+                    section.className = 'articles-section';
+                    
+                    const priorityLabel = priority.charAt(0).toUpperCase() + priority.slice(1);
+                    const priorityIcon = priority === 'high' ? '🚨' : priority === 'medium' ? '⚠️' : 'ℹ️';
+                    
+                    section.innerHTML = `
+                        <h2 class="section-header priority-${priority}">
+                            ${priorityIcon} ${priorityLabel} Priority (${grouped[priority].length})
+                        </h2>
+                    `;
+                    
+                    grouped[priority].forEach(article => {
+                        const articleEl = createArticleElement(article, lastVisit);
+                        section.appendChild(articleEl);
+                    });
+                    
+                    container.appendChild(section);
+                }
+            });
+        }
+
+        // Create article element
+        function createArticleElement(article, lastVisit) {
+            const div = document.createElement('div');
+            div.className = 'article';
+            
+            const isNew = article.timestamp > lastVisit;
+            const date = new Date(article.pubDate);
+            
+            div.innerHTML = `
+                <div class="article-header">
+                    <a href="${article.link}" target="_blank" class="article-title">
+                        ${article.title}
+                    </a>
+                    ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+                </div>
+                <div class="article-meta">
+                    <span class="article-source">${article.source}</span>
+                    <span>•</span>
+                    <span>${formatDate(date)}</span>
+                    <span>•</span>
+                    <span>${article.category}</span>
+                </div>
+                <div class="article-description">
+                    ${article.description}
+                </div>
+                <div class="article-tags">
+                    ${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Format date
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                if (hours === 0) {
+                    const mins = Math.floor(diff / (1000 * 60));
+                    return `${mins} minutes ago`;
+                }
+                return `${hours} hours ago`;
+            } else if (days === 1) {
+                return 'Yesterday';
+            } else if (days < 7) {
+                return `${days} days ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        // Filter by priority
+        function filterPriority(priority) {
+            currentFilter = priority;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayArticles();
+            updateStats();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const lastVisitKey = currentMode === 'email' ? EMAIL_LAST_VISIT_KEY : SMS_LAST_VISIT_KEY;
+            const lastVisit = parseInt(localStorage.getItem(lastVisitKey));
+            
+            let filtered = allArticles;
+            if (currentFilter !== 'all') {
+                filtered = allArticles.filter(a => a.priority === currentFilter);
+            }
+            
+            document.getElementById('total-articles').textContent = filtered.length;
+            document.getElementById('new-articles').textContent = 
+                filtered.filter(a => a.timestamp > lastVisit).length;
+            document.getElementById('high-priority').textContent = 
+                allArticles.filter(a => a.priority === 'high').length;
+            
+            // Count active sources from status data
+            const activeSources = Object.values(sourceStatusData).filter(s => s.status === 'active').length;
+            document.getElementById('active-sources').textContent = activeSources;
+        }
+
+        // Update last updated time
+        function updateLastUpdated() {
+            const lastUpdateKey = currentMode === 'email' ? EMAIL_LAST_UPDATE_KEY : SMS_LAST_UPDATE_KEY;
+            const lastUpdate = localStorage.getItem(lastUpdateKey);
+            if (lastUpdate) {
+                const date = new Date(parseInt(lastUpdate));
+                document.getElementById('last-updated').textContent = formatDate(date);
+            }
+        }
+    </script>
+</body>
+</html>
