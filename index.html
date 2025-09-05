@@ -523,102 +523,118 @@
             'https://cors-anywhere.herokuapp.com/'
         ];
 
-        // Email RSS Feeds Configuration
+        // Email RSS Feeds Configuration - Updated with working feeds
         const EMAIL_RSS_FEEDS = {
             // Email Service Providers
-            'SendGrid Blog': {
-                url: 'https://sendgrid.com/blog/feed/',
-                category: 'ESP'
-            },
             'Mailgun Blog': {
-                url: 'https://www.mailgun.com/blog/feed/',
+                url: 'https://www.mailgun.com/blog/rss/',
                 category: 'ESP'
             },
             'SparkPost Blog': {
-                url: 'https://www.sparkpost.com/blog/feed/',
+                url: 'https://www.sparkpost.com/blog/rss/',
                 category: 'ESP'
             },
             'Postmark Blog': {
-                url: 'https://postmarkapp.com/blog/feed.xml',
+                url: 'https://postmarkapp.com/blog/feed',
                 category: 'ESP'
             },
-            'Amazon SES Blog': {
-                url: 'https://aws.amazon.com/blogs/messaging-and-targeting/feed/',
+            'SendGrid Blog': {
+                url: 'https://sendgrid.com/en-us/blog/feed',
                 category: 'ESP'
             },
-            'Mailchimp Blog': {
-                url: 'https://mailchimp.com/feeds/blog/',
+            'Mailjet Blog': {
+                url: 'https://www.mailjet.com/blog/feed/',
+                category: 'ESP'
+            },
+            'Sendinblue Blog': {
+                url: 'https://www.sendinblue.com/blog/feed/',
+                category: 'ESP'
+            },
+            
+            // Email Marketing Platforms
+            'Mailchimp Resources': {
+                url: 'https://mailchimp.com/resources/rss/',
                 category: 'Email Marketing'
             },
             'Campaign Monitor Blog': {
                 url: 'https://www.campaignmonitor.com/blog/feed/',
                 category: 'Email Marketing'
             },
-            'GetResponse Blog': {
-                url: 'https://www.getresponse.com/blog/feed',
+            'ActiveCampaign Blog': {
+                url: 'https://www.activecampaign.com/blog/feed',
                 category: 'Email Marketing'
             },
-            'Constant Contact Blog': {
-                url: 'https://blogs.constantcontact.com/feed/',
+            'ConvertKit Blog': {
+                url: 'https://convertkit.com/resources/blog/feed',
                 category: 'Email Marketing'
             },
             'AWeber Blog': {
-                url: 'https://blog.aweber.com/feed',
+                url: 'https://blog.aweber.com/feed.xml',
                 category: 'Email Marketing'
             },
             
             // Deliverability Services
-            'Validity Blog': {
-                url: 'https://www.validity.com/blog/feed/',
-                category: 'Deliverability'
-            },
-            '250ok Blog': {
-                url: 'https://250ok.com/blog/feed/',
-                category: 'Deliverability'
-            },
             'Kickbox Blog': {
-                url: 'https://blog.kickbox.com/rss/',
+                url: 'https://kickbox.com/blog/rss/',
                 category: 'Deliverability'
             },
             'Email on Acid Blog': {
-                url: 'https://www.emailonacid.com/blog/rss.xml',
+                url: 'https://www.emailonacid.com/blog/feed/',
                 category: 'Email Testing'
             },
-            'GlockApps Blog': {
-                url: 'https://glockapps.com/blog/feed/',
+            'Validity Blog': {
+                url: 'https://www.validity.com/resources/feed/',
+                category: 'Deliverability'
+            },
+            'ZeroBounce Blog': {
+                url: 'https://www.zerobounce.net/blog/feed/',
+                category: 'Email Validation'
+            },
+            
+            // Industry Experts & Resources
+            'Litmus Blog': {
+                url: 'https://www.litmus.com/blog/feed/',
+                category: 'Email Design'
+            },
+            'Really Good Emails Blog': {
+                url: 'https://reallygoodemails.com/blog/feed/',
+                category: 'Email Design'
+            },
+            'Email Vendor Selection': {
+                url: 'https://www.emailvendorselection.com/feed/',
+                category: 'Industry Analysis'
+            },
+            'Only Influencers': {
+                url: 'https://www.onlyinfluencers.com/feed',
+                category: 'Industry Expert'
+            },
+            'Spam Resource': {
+                url: 'https://www.spamresource.com/feeds/posts/default',
                 category: 'Deliverability'
             },
             
-            // Industry Experts
+            // Authentication & Technical
+            'DMARC.org News': {
+                url: 'https://dmarc.org/feed/',
+                category: 'Authentication'
+            },
             'Word to the Wise': {
                 url: 'https://wordtothewise.com/feed/',
                 category: 'Industry Expert'
             },
-            'Litmus Blog': {
-                url: 'https://litmus.com/blog/feed',
-                category: 'Email Design'
-            },
-            'Really Good Emails': {
-                url: 'https://reallygoodemails.com/blog/feed',
-                category: 'Email Design'
-            },
-            'Email Geeks': {
-                url: 'https://emailgeeks.com/feed/',
-                category: 'Community'
+            
+            // General Email Marketing
+            'Email Marketing Rules': {
+                url: 'https://www.emailmarketingrules.com/feed/',
+                category: 'Best Practices'
             },
             'Phrasee Blog': {
                 url: 'https://phrasee.co/feed/',
                 category: 'Email AI'
             },
-            
-            // Major Email Providers
-            'Google Workspace Updates': {
-                url: 'https://workspaceupdates.googleblog.com/feeds/posts/default',
-                category: 'Email Provider'
-            },
-            'Microsoft 365 Blog': {
-                url: 'https://techcommunity.microsoft.com/gxcuf89792/rss/board?board.id=Exchange',
-                category: 'Email Provider'
+            'Movable Ink Blog': {
+                url: 'https://movableink.com/blog/feed/',
+                category: 'Email Personalization'
             }
         };
 
@@ -968,6 +984,12 @@
                     const parser = new DOMParser();
                     const xml = parser.parseFromString(xmlText, 'text/xml');
                     
+                    // Check for parser error
+                    const parserError = xml.querySelector('parsererror');
+                    if (parserError) {
+                        throw new Error('Invalid XML feed');
+                    }
+                    
                     const items = xml.querySelectorAll('item, entry');
                     let sourceArticleCount = 0;
                     let latestDate = null;
@@ -976,7 +998,7 @@
                         const titleEl = item.querySelector('title');
                         const linkEl = item.querySelector('link');
                         const descEl = item.querySelector('description, summary, content');
-                        const dateEl = item.querySelector('pubDate, published, updated');
+                        const dateEl = item.querySelector('pubDate, published, updated, dc\\:date');
                         
                         if (titleEl && linkEl) {
                             const title = titleEl.textContent;
@@ -984,6 +1006,11 @@
                             const description = descEl ? descEl.textContent : '';
                             const dateStr = dateEl ? dateEl.textContent : new Date().toISOString();
                             const pubDate = new Date(dateStr);
+                            
+                            // Validate date
+                            if (isNaN(pubDate.getTime())) {
+                                pubDate = new Date();
+                            }
                             
                             // Count articles from last 7 days for source status
                             if (pubDate.getTime() > sevenDaysAgo) {
