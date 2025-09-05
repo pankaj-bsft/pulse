@@ -397,6 +397,23 @@
             color: #92400e;
         }
 
+        .cors-notice {
+            background: #dbeafe;
+            border: 1px solid #60a5fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #1e40af;
+        }
+
+        .cors-notice h3 {
+            margin-bottom: 10px;
+        }
+
+        .cors-notice p {
+            margin-bottom: 10px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .controls {
@@ -449,6 +466,12 @@
 
         <div class="notice">
             📅 Showing only updates from the past 7 days to keep you current with the latest industry news
+        </div>
+
+        <div class="cors-notice">
+            <h3>ℹ️ Note on Feed Availability</h3>
+            <p>Some RSS feeds may show as unavailable due to CORS restrictions. This is a browser security limitation when accessing external feeds.</p>
+            <p><strong>For best results:</strong> Use this tool regularly as it will cache successful feed results for better reliability.</p>
         </div>
 
         <div class="controls">
@@ -531,141 +554,86 @@
         let allArticles = [];
         let sourceStatusData = {};
 
-        // CORS Proxy configuration with more reliable proxies
-        const CORS_PROXIES = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
-            'https://proxy.cors.sh/',
-            'https://cors.eu.org/'
-        ];
+        // Use AllOrigins as primary CORS proxy - it's more reliable
+        const CORS_PROXY = 'https://api.allorigins.win/get?url=';
 
-        // Email RSS Feeds Configuration - Only well-maintained feeds
+        // Email RSS Feeds - Focusing on most reliable feeds
         const EMAIL_RSS_FEEDS = {
-            // Email Service Providers
-            'Mailgun Blog': {
-                url: 'https://www.mailgun.com/blog/feed',
-                category: 'ESP'
-            },
+            // Primary Email Service Providers
             'Postmark Blog': {
                 url: 'https://postmarkapp.com/blog/feed',
+                category: 'ESP'
+            },
+            'Mailgun Blog': {
+                url: 'https://www.mailgun.com/blog/feed/',
                 category: 'ESP'
             },
             'SendGrid Blog': {
                 url: 'https://sendgrid.com/en-us/blog/feed',
                 category: 'ESP'
             },
-            'Mailjet Blog': {
-                url: 'https://www.mailjet.com/blog/feed/',
-                category: 'ESP'
-            },
-            'Amazon SES Blog': {
-                url: 'https://aws.amazon.com/blogs/messaging-and-targeting/feed/',
-                category: 'ESP'
-            },
-            'Brevo (Sendinblue) Blog': {
-                url: 'https://www.brevo.com/blog/feed/',
-                category: 'ESP'
-            },
             
-            // Email Marketing Platforms
-            'Campaign Monitor Blog': {
+            // Email Marketing Platforms  
+            'Campaign Monitor': {
                 url: 'https://www.campaignmonitor.com/blog/feed/',
-                category: 'Email Marketing'
-            },
-            'ActiveCampaign Blog': {
-                url: 'https://www.activecampaign.com/blog/feed',
-                category: 'Email Marketing'
-            },
-            'ConvertKit Blog': {
-                url: 'https://convertkit.com/resources/blog/feed',
                 category: 'Email Marketing'
             },
             'GetResponse Blog': {
                 url: 'https://www.getresponse.com/blog/feed',
                 category: 'Email Marketing'
             },
+            'ActiveCampaign': {
+                url: 'https://www.activecampaign.com/blog/feed',
+                category: 'Email Marketing'
+            },
             
-            // Deliverability Services
-            'Email on Acid Blog': {
+            // Deliverability
+            'Email on Acid': {
                 url: 'https://www.emailonacid.com/blog/feed/',
                 category: 'Email Testing'
             },
-            'Validity Blog': {
-                url: 'https://www.validity.com/resources/feed/',
-                category: 'Deliverability'
-            },
-            'ZeroBounce Blog': {
-                url: 'https://www.zerobounce.net/blog/feed/',
-                category: 'Email Validation'
-            },
-            'Kickbox Blog': {
-                url: 'https://kickbox.com/blog/feed',
-                category: 'Deliverability'
-            },
-            
-            // Industry Experts & Resources
             'Litmus Blog': {
                 url: 'https://www.litmus.com/blog/feed/',
                 category: 'Email Design'
             },
-            'Really Good Emails Blog': {
+            'Really Good Emails': {
                 url: 'https://reallygoodemails.com/blog/feed/',
                 category: 'Email Design'
             },
-            'Email Vendor Selection': {
-                url: 'https://www.emailvendorselection.com/feed/',
-                category: 'Industry Analysis'
+            
+            // Industry Resources
+            'Word to the Wise': {
+                url: 'https://wordtothewise.com/feed/',
+                category: 'Industry Expert'
             },
             'Spam Resource': {
                 url: 'https://www.spamresource.com/feeds/posts/default',
                 category: 'Deliverability'
-            },
-            
-            // Authentication & Technical
-            'DMARC.org News': {
-                url: 'https://dmarc.org/feed/',
-                category: 'Authentication'
-            },
-            'Word to the Wise': {
-                url: 'https://wordtothewise.com/feed/',
-                category: 'Industry Expert'
             }
         };
 
-        // SMS RSS Feeds Configuration
+        // SMS RSS Feeds - Focusing on most reliable feeds
         const SMS_RSS_FEEDS = {
-            // SMS Platforms
+            // Primary SMS Platforms
             'Twilio Blog': {
                 url: 'https://www.twilio.com/blog/feed',
-                category: 'SMS Platform'
-            },
-            'Sinch Blog': {
-                url: 'https://www.sinch.com/blog/feed/',
                 category: 'SMS Platform'
             },
             'Bandwidth Blog': {
                 url: 'https://www.bandwidth.com/blog/feed/',
                 category: 'SMS Platform'
             },
-            'MessageBird Blog': {
-                url: 'https://messagebird.com/blog/feed',
-                category: 'SMS Platform'
-            },
             'Plivo Blog': {
                 url: 'https://www.plivo.com/blog/feed/',
                 category: 'SMS Platform'
             },
-            'Vonage Blog': {
-                url: 'https://www.vonage.com/resources/feed/',
-                category: 'SMS Platform'
-            },
             
-            // SMS Marketing Tools
-            'SimpleTexting Blog': {
+            // SMS Marketing
+            'SimpleTexting': {
                 url: 'https://simpletexting.com/blog/feed/',
                 category: 'SMS Marketing'
             },
-            'EZ Texting Blog': {
+            'EZ Texting': {
                 url: 'https://www.eztexting.com/blog/feed',
                 category: 'SMS Marketing'
             },
@@ -673,49 +641,25 @@
                 url: 'https://www.slicktext.com/blog/feed/',
                 category: 'SMS Marketing'
             },
-            'Attentive Blog': {
-                url: 'https://www.attentivemobile.com/blog/feed',
-                category: 'SMS Marketing'
-            },
-            'TextMagic Blog': {
-                url: 'https://www.textmagic.com/blog/feed/',
+            'Tatango Blog': {
+                url: 'https://www.tatango.com/blog/feed/',
                 category: 'SMS Marketing'
             },
             
-            // Mobile Marketing & Engagement
-            'Braze Blog': {
-                url: 'https://www.braze.com/resources/feed',
+            // Mobile Engagement
+            'OneSignal Blog': {
+                url: 'https://onesignal.com/blog/feed/',
                 category: 'Mobile Marketing'
             },
             'Airship Blog': {
                 url: 'https://www.airship.com/blog/feed/',
                 category: 'Mobile Marketing'
             },
-            'OneSignal Blog': {
-                url: 'https://onesignal.com/blog/feed/',
-                category: 'Mobile Marketing'
-            },
-            'CleverTap Blog': {
-                url: 'https://clevertap.com/blog/feed/',
-                category: 'Mobile Marketing'
-            },
-            'MoEngage Blog': {
-                url: 'https://www.moengage.com/blog/feed/',
-                category: 'Mobile Marketing'
-            },
             
-            // Compliance & Industry
-            'CTIA Blog': {
+            // Industry
+            'CTIA News': {
                 url: 'https://www.ctia.org/news/feed',
                 category: 'Compliance'
-            },
-            'Mobile Ecosystem Forum': {
-                url: 'https://mobileecosystemforum.com/feed/',
-                category: 'Industry'
-            },
-            'Tatango Blog': {
-                url: 'https://www.tatango.com/blog/feed/',
-                category: 'SMS Marketing'
             }
         };
 
@@ -892,34 +836,30 @@
             displaySourceStatus();
         }
 
-        // Try fetching with different CORS proxies
-        async function fetchWithCORS(url) {
-            let lastError = null;
-            
-            for (const proxy of CORS_PROXIES) {
+        // Fetch RSS feed using AllOrigins proxy
+        async function fetchWithAllOrigins(url) {
+            try {
+                const response = await fetch(CORS_PROXY + encodeURIComponent(url));
+                const data = await response.json();
+                
+                if (data.status.http_code === 200) {
+                    return data.contents;
+                } else {
+                    throw new Error(`HTTP ${data.status.http_code}`);
+                }
+            } catch (error) {
+                console.error('AllOrigins error:', error);
+                // Try direct fetch as fallback
                 try {
-                    const proxyUrl = proxy + (proxy.includes('?') ? '' : '') + encodeURIComponent(url);
-                    const response = await fetch(proxyUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/rss+xml, application/xml, text/xml, */*'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const text = await response.text();
-                        // Verify it's XML
-                        if (text.includes('<') && (text.includes('<rss') || text.includes('<feed') || text.includes('<channel'))) {
-                            return text;
-                        }
+                    const directResponse = await fetch(url);
+                    if (directResponse.ok) {
+                        return await directResponse.text();
                     }
-                } catch (error) {
-                    lastError = error;
-                    console.log(`Proxy ${proxy} failed for ${url}:`, error.message);
+                } catch (directError) {
+                    // If both fail, throw the original error
+                    throw error;
                 }
             }
-            
-            throw lastError || new Error('All CORS proxies failed');
         }
 
         // Refresh all feeds
@@ -956,110 +896,138 @@
             sourceStatusData = tempSourceStatus;
             displaySourceStatus();
             
-            // Fetch from all sources with timeout
-            const fetchPromises = Object.entries(rssFeeds).map(async ([source, config]) => {
-                const timeout = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Timeout')), 15000)
-                );
-                
-                try {
-                    const xmlText = await Promise.race([fetchWithCORS(config.url), timeout]);
-                    const parser = new DOMParser();
-                    const xml = parser.parseFromString(xmlText, 'text/xml');
-                    
-                    // Check for parser error
-                    const parserError = xml.querySelector('parsererror');
-                    if (parserError) {
-                        throw new Error('Invalid XML feed');
-                    }
-                    
-                    const items = xml.querySelectorAll('item, entry');
-                    let sourceArticleCount = 0;
-                    let relevantArticleCount = 0;
-                    let latestDate = null;
-                    
-                    items.forEach(item => {
-                        const titleEl = item.querySelector('title');
-                        const linkEl = item.querySelector('link');
-                        const descEl = item.querySelector('description, summary, content\\:encoded, content');
-                        const dateEl = item.querySelector('pubDate, published, updated, dc\\:date, date');
-                        
-                        if (titleEl && linkEl) {
-                            const title = titleEl.textContent || '';
-                            const link = linkEl.textContent || linkEl.getAttribute('href') || '';
-                            const description = descEl ? (descEl.textContent || '') : '';
-                            
-                            // Parse date
-                            let pubDate = new Date();
-                            if (dateEl && dateEl.textContent) {
-                                const parsedDate = new Date(dateEl.textContent);
-                                if (!isNaN(parsedDate.getTime())) {
-                                    pubDate = parsedDate;
-                                }
-                            }
-                            
-                            // Only process articles from past 7 days
-                            if (pubDate.getTime() > sevenDaysAgo) {
-                                sourceArticleCount++;
-                                
-                                // Track latest article date
-                                if (!latestDate || pubDate > latestDate) {
-                                    latestDate = pubDate;
-                                }
-                                
-                                // Check if relevant to our keywords
-                                const fullText = `${title} ${description}`.toLowerCase();
-                                const isRelevant = keywords.some(keyword => 
-                                    fullText.includes(keyword.toLowerCase())
-                                );
-                                
-                                if (isRelevant) {
-                                    relevantArticleCount++;
-                                    const article = {
-                                        title: cleanText(title).substring(0, 200),
-                                        link: link,
-                                        description: cleanText(description).substring(0, 300) + '...',
-                                        source: source,
-                                        category: config.category,
-                                        pubDate: pubDate.toISOString(),
-                                        timestamp: pubDate.getTime(),
-                                        id: `${source}-${link}`,
-                                        priority: determinePriority(fullText),
-                                        tags: extractTags(fullText)
-                                    };
-                                    
-                                    newArticles.push(article);
-                                }
-                            }
-                        }
-                    });
-                    
-                    // Update source status
-                    tempSourceStatus[source] = {
-                        category: config.category,
-                        status: relevantArticleCount > 0 ? 'active' : (sourceArticleCount > 0 ? 'inactive' : 'no-content'),
-                        lastArticle: latestDate ? formatDate(latestDate) : 'No articles in past 7 days',
-                        articleCount: relevantArticleCount,
-                        totalCount: sourceArticleCount,
-                        lastChecked: new Date().toISOString()
-                    };
-                    
-                    console.log(`${source}: ${relevantArticleCount} relevant / ${sourceArticleCount} total articles`);
-                    
-                } catch (error) {
-                    console.error(`Error fetching ${source}:`, error.message);
-                    tempSourceStatus[source] = {
-                        category: config.category,
-                        status: 'error',
-                        lastArticle: 'Feed unavailable',
-                        articleCount: 0,
-                        lastChecked: new Date().toISOString(),
-                        error: error.message
-                    };
-                }
-            });
+            // Process feeds in smaller batches to avoid overwhelming the proxy
+            const feedEntries = Object.entries(rssFeeds);
+            const batchSize = 3;
             
-            await Promise.allSettled(fetchPromises);
+            for (let i = 0; i < feedEntries.length; i += batchSize) {
+                const batch = feedEntries.slice(i, i + batchSize);
+                
+                const batchPromises = batch.map(async ([source, config]) => {
+                    const timeout = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 20000)
+                    );
+                    
+                    try {
+                        console.log(`Fetching ${source}...`);
+                        const xmlText = await Promise.race([fetchWithAllOrigins(config.url), timeout]);
+                        
+                        const parser = new DOMParser();
+                        const xml = parser.parseFromString(xmlText, 'text/xml');
+                        
+                        // Check for parser error
+                        const parserError = xml.querySelector('parsererror');
+                        if (parserError) {
+                            throw new Error('Invalid XML feed');
+                        }
+                        
+                        const items = xml.querySelectorAll('item, entry');
+                        let sourceArticleCount = 0;
+                        let relevantArticleCount = 0;
+                        let latestDate = null;
+                        
+                        items.forEach((item, index) => {
+                            // Limit to first 50 items per feed for performance
+                            if (index > 50) return;
+                            
+                            const titleEl = item.querySelector('title');
+                            const linkEl = item.querySelector('link');
+                            const descEl = item.querySelector('description, summary, content\\:encoded, content');
+                            const dateEl = item.querySelector('pubDate, published, updated, dc\\:date, date');
+                            
+                            if (titleEl && linkEl) {
+                                const title = titleEl.textContent || '';
+                                let link = linkEl.textContent || linkEl.getAttribute('href') || '';
+                                
+                                // Handle relative URLs
+                                if (link && !link.startsWith('http')) {
+                                    const urlObj = new URL(config.url);
+                                    link = urlObj.origin + link;
+                                }
+                                
+                                const description = descEl ? (descEl.textContent || '') : '';
+                                
+                                // Parse date
+                                let pubDate = new Date();
+                                if (dateEl && dateEl.textContent) {
+                                    const parsedDate = new Date(dateEl.textContent);
+                                    if (!isNaN(parsedDate.getTime())) {
+                                        pubDate = parsedDate;
+                                    }
+                                }
+                                
+                                // Only process articles from past 7 days
+                                if (pubDate.getTime() > sevenDaysAgo) {
+                                    sourceArticleCount++;
+                                    
+                                    // Track latest article date
+                                    if (!latestDate || pubDate > latestDate) {
+                                        latestDate = pubDate;
+                                    }
+                                    
+                                    // Check if relevant to our keywords
+                                    const fullText = `${title} ${description}`.toLowerCase();
+                                    const isRelevant = keywords.some(keyword => 
+                                        fullText.includes(keyword.toLowerCase())
+                                    );
+                                    
+                                    if (isRelevant) {
+                                        relevantArticleCount++;
+                                        const article = {
+                                            title: cleanText(title).substring(0, 200),
+                                            link: link,
+                                            description: cleanText(description).substring(0, 300) + '...',
+                                            source: source,
+                                            category: config.category,
+                                            pubDate: pubDate.toISOString(),
+                                            timestamp: pubDate.getTime(),
+                                            id: `${source}-${link}`,
+                                            priority: determinePriority(fullText),
+                                            tags: extractTags(fullText)
+                                        };
+                                        
+                                        newArticles.push(article);
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Update source status
+                        tempSourceStatus[source] = {
+                            category: config.category,
+                            status: relevantArticleCount > 0 ? 'active' : (sourceArticleCount > 0 ? 'inactive' : 'no-content'),
+                            lastArticle: latestDate ? formatDate(latestDate) : 'No articles in past 7 days',
+                            articleCount: relevantArticleCount,
+                            totalCount: sourceArticleCount,
+                            lastChecked: new Date().toISOString()
+                        };
+                        
+                        console.log(`${source}: ${relevantArticleCount} relevant / ${sourceArticleCount} total articles`);
+                        
+                    } catch (error) {
+                        console.error(`Error fetching ${source}:`, error.message);
+                        tempSourceStatus[source] = {
+                            category: config.category,
+                            status: 'error',
+                            lastArticle: 'Feed unavailable',
+                            articleCount: 0,
+                            lastChecked: new Date().toISOString(),
+                            error: error.message
+                        };
+                    }
+                });
+                
+                await Promise.allSettled(batchPromises);
+                
+                // Update status after each batch
+                sourceStatusData = { ...tempSourceStatus };
+                displaySourceStatus();
+                
+                // Small delay between batches
+                if (i + batchSize < feedEntries.length) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
             
             // Remove duplicates and sort
             const uniqueArticles = removeDuplicates(newArticles);
